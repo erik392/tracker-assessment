@@ -1,0 +1,15 @@
+{
+    "id": "trk-1006",
+    "name": "Door Guard",
+    "category": "Sensors",
+    "summary": "Magnetic door open/close sensor.",
+    "details": "Instant alerts with low-latency profile.",
+    "status": "offline",
+    "tags": ["magnetic", "alert"],
+    "lastUpdated": "2025-01-11T07:05:00Z",
+    "specs": {
+        "battery": "800mAh",
+        "connectivity": ["BLE"],
+        "dimensions": "60x25x12mm"
+    }
+}

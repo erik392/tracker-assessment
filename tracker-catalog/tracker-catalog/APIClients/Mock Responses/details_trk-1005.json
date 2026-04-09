@@ -1,0 +1,15 @@
+{
+    "id": "trk-1005",
+    "name": "Asset Tag Mini",
+    "category": "Trackers",
+    "summary": "Ultra-compact asset tracker.",
+    "details": "Geofencing and event history.",
+    "status": "active",
+    "tags": ["gps", "asset"],
+    "lastUpdated": "2025-01-12T19:20:00Z",
+    "specs": {
+        "battery": "300mAh",
+        "connectivity": ["BLE", "LTE-M"],
+        "dimensions": "35x35x7mm"
+    }
+}

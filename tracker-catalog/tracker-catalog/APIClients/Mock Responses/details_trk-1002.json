@@ -1,0 +1,15 @@
+{
+    "id": "trk-1002",
+    "name": "Motion Sense X",
+    "category": "Sensors",
+    "summary": "Passive infrared motion detector.",
+    "details": "Adjustable sensitivity, 2-year battery life.",
+    "status": "offline",
+    "tags": ["pir", "battery"],
+    "lastUpdated": "2025-01-15T08:30:00Z",
+    "specs": {
+        "battery": "1200mAh",
+        "connectivity": ["PIR", "BLE"],
+        "dimensions": "85x60x40mm"
+    }
+}
