@@ -30,8 +30,8 @@ struct TrackerListView: View {
                         }
                     }
 
-                case .loaded(let items):
-                    content(items)
+                case .loaded:
+                    content(viewModel.filteredItems)
                         .refreshable {
                             await viewModel.loadItems()
                         }
@@ -39,6 +39,7 @@ struct TrackerListView: View {
             }
             .navigationTitle("Trackers")
             .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: $viewModel.searchText)
             .navigationDestination(for: String.self) { id in
                 let session = try! MockSessionFactory.makeMockSession()
                 let client = TrackerAPIClient(session: session)
