@@ -10,6 +10,7 @@ import CoreData
 
 struct TrackerListView: View {
     @StateObject var viewModel: TrackerListViewModel
+    @EnvironmentObject var favourites: FavouritesStore
 
     var body: some View {
         NavigationStack {
@@ -44,20 +45,27 @@ struct TrackerListView: View {
                 let session = try! MockSessionFactory.makeMockSession()
                 let client = TrackerAPIClient(session: session)
                 TrackerDetailsView(viewModel: TrackerDetailsViewModel(trackerId: id, apiClient: client))
+                    .environmentObject(FavouritesStore())
             }
             .task {
                 await viewModel.loadItems()
             }
         }
     }
-}
-
-@ViewBuilder
-private func content(_ items: [TrackerItem]) -> some View {
-    List {
-        ForEach(items, id: \.id) { item in
-            NavigationLink(value: item.id) {
-                TrackerRowView(item: item)
+    
+    @ViewBuilder
+    private func content(_ items: [TrackerItem]) -> some View {
+        List {
+            ForEach(items, id: \.id) { item in
+                NavigationLink(value: item.id) {
+                    TrackerRowView(
+                        item: item,
+                        isFavourite: favourites.isFavourite(item.id),
+                        onFavouriteToggle: {
+                            favourites.toggle(item.id)
+                        }
+                    )
+                }
             }
         }
     }
@@ -65,6 +73,8 @@ private func content(_ items: [TrackerItem]) -> some View {
 
 struct TrackerRowView: View {
     let item: TrackerItem
+    let isFavourite: Bool
+    let onFavouriteToggle: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -77,6 +87,14 @@ struct TrackerRowView: View {
                 Spacer()
 
                 StatusBadge(status: item.status)
+                
+                Button {
+                    onFavouriteToggle()
+                } label: {
+                    Image(systemName: isFavourite ? "star.fill" : "star")
+                        .foregroundStyle(.red)
+                }
+                .buttonStyle(.borderless)
             }
 
             // Category
@@ -138,5 +156,6 @@ struct StatusBadge: View {
 #Preview {
     let session = try! MockSessionFactory.makeMockSession()
     let client = TrackerAPIClient(session: session)
-    TrackerListView(viewModel: TrackerListViewModel(apiClient: client)).environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    TrackerListView(viewModel: TrackerListViewModel(apiClient: client))
+        .environmentObject(FavouritesStore())
 }

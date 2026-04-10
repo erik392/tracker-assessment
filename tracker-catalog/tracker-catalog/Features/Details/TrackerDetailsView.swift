@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TrackerDetailsView: View {
     @StateObject var viewModel: TrackerDetailsViewModel
+    @EnvironmentObject var favourites: FavouritesStore
     
     var body: some View {
         Group {
@@ -38,77 +39,101 @@ struct TrackerDetailsView: View {
             await viewModel.loadDetails()
         }
     }
+    
+    @ViewBuilder
+    private func content(_ item: DetailsResponse) -> some View {
+        TrackerDetailHeaderView(
+            item: item,
+            isFavourite: favourites.isFavourite(item.id),
+            onFavouriteToggle: {
+                favourites.toggle(item.id)
+            }
+        )
+    }
 }
 
-@ViewBuilder
-private func content(_ item: DetailsResponse) -> some View {
-    ScrollView {
-        VStack(alignment: .leading, spacing: 16) {
-            
-            // MARK: Header
-            HStack {
-                Text(item.name)
-                    .font(.largeTitle.bold())
+struct TrackerDetailHeaderView: View {
+    let item: DetailsResponse
+    let isFavourite: Bool
+    let onFavouriteToggle: () -> Void
+    
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
                 
-                Spacer()
+                // MARK: Header
+                HStack {
+                    Text(item.name)
+                        .font(.largeTitle.bold())
+                    
+                    Spacer()
+                    
+                    StatusBadge(status: item.status)
+                    
+                    Button {
+                        onFavouriteToggle()
+                    } label: {
+                        Image(systemName: isFavourite ? "star.fill" : "star")
+                            .foregroundStyle(.red)
+                    }
+                    .buttonStyle(.borderless)
+                }
                 
-                StatusBadge(status: item.status)
-            }
-            
-            Text(item.category)
-                .font(.headline)
-                .foregroundStyle(.secondary)
-            
-            Divider()
-            
-            // MARK: Summary
-            Text(item.summary)
-                .font(.body)
-            
-            // MARK: Full Details
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Details")
+                Text(item.category)
                     .font(.headline)
+                    .foregroundStyle(.secondary)
                 
-                Text(item.details)
+                Divider()
+                
+                // MARK: Summary
+                Text(item.summary)
                     .font(.body)
+                
+                // MARK: Full Details
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Details")
+                        .font(.headline)
+                    
+                    Text(item.details)
+                        .font(.body)
+                }
+                
+                Divider()
+                
+                // MARK: Tags
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Tags")
+                        .font(.headline)
+                    
+                    FlowLayout(tags: item.tags)
+                }
+                
+                Divider()
+                
+                // MARK: Specs
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Specifications")
+                        .font(.headline)
+                    
+                    SpecRow(title: "Battery", value: item.specs.battery)
+                    
+                    SpecRow(
+                        title: "Connectivity",
+                        value: item.specs.connectivity.joined(separator: ", ")
+                    )
+                    
+                    SpecRow(title: "Dimensions", value: item.specs.dimensions)
+                }
+                
+                Divider()
+                
+                // MARK: Footer
+                Text("Last updated: \(item.lastUpdated.formatted(date: .abbreviated, time: .shortened))")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
-            
-            Divider()
-            
-            // MARK: Tags
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Tags")
-                    .font(.headline)
-                
-                FlowLayout(tags: item.tags)
-            }
-            
-            Divider()
-            
-            // MARK: Specs
-            VStack(alignment: .leading, spacing: 12) {
-                Text("Specifications")
-                    .font(.headline)
-                
-                SpecRow(title: "Battery", value: item.specs.battery)
-                
-                SpecRow(
-                    title: "Connectivity",
-                    value: item.specs.connectivity.joined(separator: ", ")
-                )
-                
-                SpecRow(title: "Dimensions", value: item.specs.dimensions)
-            }
-            
-            Divider()
-            
-            // MARK: Footer
-            Text("Last updated: \(item.lastUpdated.formatted(date: .abbreviated, time: .shortened))")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            .padding()
         }
-        .padding()
     }
 }
 
@@ -158,4 +183,5 @@ struct FlowLayout: View {
     let session = try! MockSessionFactory.makeMockSession()
     let client = TrackerAPIClient(session: session)
     TrackerDetailsView(viewModel: TrackerDetailsViewModel(trackerId: "trk-1001", apiClient: client))
+        .environmentObject(FavouritesStore())
 }
