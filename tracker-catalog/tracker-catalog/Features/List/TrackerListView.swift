@@ -9,26 +9,43 @@ import SwiftUI
 import CoreData
 
 struct TrackerListView: View {
-    
     @StateObject var viewModel: TrackerListViewModel
-    
+
     var body: some View {
-        NavigationStack {
-            List {
-                ForEach(viewModel.items, id: \.id) { item in
-                    NavigationLink {
-                        TrackerDetailView(
-                            viewModel: TrackerDetailsViewModel(trackerId: item.id, apiClient: TrackerAPIClient())
-                        )
-                    } label: {
-                        TrackerRowView(item: item)
+        Group {
+            switch viewModel.state {
+
+            case .loading:
+                ProgressView()
+
+            case .failed:
+                VStack(spacing: 12) {
+                    Text("Failed to load items")
+
+                    Button("Retry") {
+                        Task {
+                            await viewModel.loadItems()
+                        }
                     }
                 }
+
+            case .loaded(let items):
+                content(items)
             }
-            .navigationTitle("Trackers")
-            .task {
-                await viewModel.loadItems()
-            }
+        }
+        .navigationTitle("Trackers")
+        .navigationBarTitleDisplayMode(.inline)
+        .task {
+            await viewModel.loadItems()
+        }
+    }
+}
+
+@ViewBuilder
+private func content(_ items: [TrackerItem]) -> some View {
+    List {
+        ForEach(items, id: \.id) { item in
+            TrackerRowView(item: item)
         }
     }
 }
@@ -73,7 +90,7 @@ struct TrackerRowView: View {
                     }
                 }
             }
-
+            
             // Footer
             Text("Updated: \(item.lastUpdated.formatted(date: .abbreviated, time: .shortened))")
                 .font(.caption2)

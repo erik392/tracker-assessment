@@ -11,10 +11,16 @@ import Combine
 @MainActor
 class TrackerListViewModel: ObservableObject {
     
+    enum State {
+        case loading
+        case loaded([TrackerItem])
+        case failed
+    }
+
     private let apiClient: TrackerClient
     
     // MARK: - Published Properties
-    @Published var items: [TrackerItem] = []
+    @Published var state: State = .loading
     
     // MARK: - Initializer
     init(apiClient: TrackerClient) {
@@ -24,9 +30,10 @@ class TrackerListViewModel: ObservableObject {
     func loadItems() async {
         do {
             try await Task.sleep(nanoseconds: 1_000_000_000)
-            items = try await apiClient.getItems().items
+            let items = try await apiClient.getItems().items
+            state = .loaded(items)
         } catch {
-            print(error)
+            state = .failed
         }
     }
 }
