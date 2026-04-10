@@ -10,12 +10,14 @@ import CoreData
 
 @main
 struct tracker_catalogApp: App {
-    let persistenceController = PersistenceController.shared
+    @StateObject private var favourites = FavouritesStore()
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
+            let session = try! MockSessionFactory.makeMockSession()
+            let client = TrackerAPIClient(session: session)
+            TrackerListView(viewModel: TrackerListViewModel(apiClient: client))
+                .environmentObject(favourites)
         }
     }
 }
