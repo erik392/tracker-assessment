@@ -14,7 +14,9 @@ struct tracker_catalogApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            let session = try! MockSessionFactory.makeMockSession()
+            let client = TrackerAPIClient(session: session)
+            TrackerListView(viewModel: TrackerListViewModel(apiClient: client))
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }
