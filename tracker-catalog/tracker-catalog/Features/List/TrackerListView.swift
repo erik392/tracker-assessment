@@ -31,6 +31,11 @@ struct TrackerListView: View {
 
             case .loaded(let items):
                 content(items)
+                    .refreshable {
+                        Task {
+                            await viewModel.loadItems()
+                        }
+                    }
             }
         }
         .navigationTitle("Trackers")
