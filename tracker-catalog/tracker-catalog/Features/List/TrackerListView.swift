@@ -12,36 +12,41 @@ struct TrackerListView: View {
     @StateObject var viewModel: TrackerListViewModel
 
     var body: some View {
-        Group {
-            switch viewModel.state {
+        NavigationStack {
+            Group {
+                switch viewModel.state {
 
-            case .loading:
-                ProgressView()
+                case .loading:
+                    ProgressView()
 
-            case .failed:
-                VStack(spacing: 12) {
-                    Text("Failed to load items")
+                case .failed:
+                    VStack(spacing: 12) {
+                        Text("Failed to load items")
 
-                    Button("Retry") {
-                        Task {
-                            await viewModel.loadItems()
+                        Button("Retry") {
+                            Task {
+                                await viewModel.loadItems()
+                            }
                         }
                     }
+
+                case .loaded(let items):
+                    content(items)
+                        .refreshable {
+                            await viewModel.loadItems()
+                        }
                 }
-
-            case .loaded(let items):
-                content(items)
-                    .refreshable {
-                        Task {
-                            await viewModel.loadItems()
-                        }
-                    }
             }
-        }
-        .navigationTitle("Trackers")
-        .navigationBarTitleDisplayMode(.inline)
-        .task {
-            await viewModel.loadItems()
+            .navigationTitle("Trackers")
+            .navigationBarTitleDisplayMode(.inline)
+            .navigationDestination(for: String.self) { id in
+                let session = try! MockSessionFactory.makeMockSession()
+                let client = TrackerAPIClient(session: session)
+                TrackerDetailsView(viewModel: TrackerDetailsViewModel(trackerId: id, apiClient: client))
+            }
+            .task {
+                await viewModel.loadItems()
+            }
         }
     }
 }
@@ -50,7 +55,9 @@ struct TrackerListView: View {
 private func content(_ items: [TrackerItem]) -> some View {
     List {
         ForEach(items, id: \.id) { item in
-            TrackerRowView(item: item)
+            NavigationLink(value: item.id) {
+                TrackerRowView(item: item)
+            }
         }
     }
 }
