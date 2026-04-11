@@ -1,0 +1,15 @@
+{
+    "id": "trk-1003",
+    "name": "Enviro Monitor",
+    "category": "Sensors",
+    "summary": "Temperature and humidity tracker.",
+    "details": "Calibrated probes with alert thresholds.",
+    "status": "active",
+    "tags": ["temperature", "humidity"],
+    "lastUpdated": "2025-01-10T13:45:00Z",
+    "specs": {
+        "battery": "1000mAh",
+        "connectivity": ["BLE"],
+        "dimensions": "70x40x18mm"
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "id": "trk-1001",
+    "name": "Beacon Pro",
+    "category": "Beacons",
+    "summary": "Indoor location beacon for micro-positioning.",
+    "details": "Battery-powered BLE beacon with configurable intervals.",
+    "status": "active",
+    "tags": ["ble", "indoor"],
+    "lastUpdated": "2025-01-18T10:00:00Z",
+    "specs": {
+        "battery": "500mAh",
+        "connectivity": ["BLE"],
+        "dimensions": "35x35x8mm"
+    }
+}
