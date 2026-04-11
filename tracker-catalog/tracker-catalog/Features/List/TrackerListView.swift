@@ -45,7 +45,6 @@ struct TrackerListView: View {
                 let session = try! MockSessionFactory.makeMockSession()
                 let client = TrackerAPIClient(session: session)
                 TrackerDetailsView(viewModel: TrackerDetailsViewModel(trackerId: id, apiClient: client))
-                    .environmentObject(FavouritesStore())
             }
             .task {
                 await viewModel.loadItems()

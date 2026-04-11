@@ -12,12 +12,28 @@ import CoreData
 struct tracker_catalogApp: App {
     @StateObject private var favourites = FavouritesStore()
 
+    private let viewModel: TrackerListViewModel
+
+    init() {
+        let session = try! MockSessionFactory.makeMockSession()
+        let client = TrackerAPIClient(session: session)
+        self.viewModel = TrackerListViewModel(apiClient: client)
+    }
+
     var body: some Scene {
         WindowGroup {
-            let session = try! MockSessionFactory.makeMockSession()
-            let client = TrackerAPIClient(session: session)
-            TrackerListView(viewModel: TrackerListViewModel(apiClient: client))
+            RootView(viewModel: viewModel)
                 .environmentObject(favourites)
+        }
+    }
+}
+
+struct RootView: View {
+    let viewModel: TrackerListViewModel
+
+    var body: some View {
+        NavigationStack {
+            TrackerListView(viewModel: viewModel)
         }
     }
 }
