@@ -33,12 +33,12 @@ class TrackerDetailsViewModel: ObservableObject {
     
     func loadDetails() async {
         do {
-            print("Loading started")
+            try await Task.sleep(nanoseconds: 1_000_000_000)
             let details = try await apiClient.getDetails(id: trackerId)
             state = .loaded(details)
-            print(details)
         } catch {
-            print(error)
+            state = .failed
+            print("Failed to load details: \(error)")
         }
     }
 }

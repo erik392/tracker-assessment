@@ -43,9 +43,8 @@ struct TrackerListView: View {
             .searchable(text: $viewModel.searchText)
             .navigationDestination(for: String.self) { id in
                 let session = try! MockSessionFactory.makeMockSession()
-                let client = TrackerAPIClient(session: session)
+                let client = MockTrackerAPIClient(session: session)
                 TrackerDetailsView(viewModel: TrackerDetailsViewModel(trackerId: id, apiClient: client))
-                    .environmentObject(FavouritesStore())
             }
             .task {
                 await viewModel.loadItems()
@@ -155,7 +154,7 @@ struct StatusBadge: View {
 
 #Preview {
     let session = try! MockSessionFactory.makeMockSession()
-    let client = TrackerAPIClient(session: session)
+    let client = MockTrackerAPIClient(session: session)
     TrackerListView(viewModel: TrackerListViewModel(apiClient: client))
         .environmentObject(FavouritesStore())
 }
