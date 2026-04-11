@@ -16,7 +16,7 @@ struct TrackerDetailsView: View {
             switch viewModel.state {
                 
             case .loading:
-                ProgressView("Loading...")
+                ProgressView()
                 
             case .failed:
                 VStack(spacing: 12) {
