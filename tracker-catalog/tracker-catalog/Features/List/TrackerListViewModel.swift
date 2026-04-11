@@ -48,6 +48,7 @@ class TrackerListViewModel: ObservableObject {
             state = .loaded
         } catch {
             state = .failed
+            print("Failed to load items: \(error)")
         }
     }
 }
