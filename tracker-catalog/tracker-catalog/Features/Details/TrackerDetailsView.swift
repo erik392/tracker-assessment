@@ -181,7 +181,7 @@ struct FlowLayout: View {
 
 #Preview {
     let session = try! MockSessionFactory.makeMockSession()
-    let client = TrackerAPIClient(session: session)
+    let client = MockTrackerAPIClient(session: session)
     TrackerDetailsView(viewModel: TrackerDetailsViewModel(trackerId: "trk-1001", apiClient: client))
         .environmentObject(FavouritesStore())
 }

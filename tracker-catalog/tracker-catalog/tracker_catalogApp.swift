@@ -16,7 +16,7 @@ struct tracker_catalogApp: App {
 
     init() {
         let session = try! MockSessionFactory.makeMockSession()
-        let client = TrackerAPIClient(session: session)
+        let client = MockTrackerAPIClient(session: session)
         self.viewModel = TrackerListViewModel(apiClient: client)
     }
 
